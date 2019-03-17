@@ -81,6 +81,7 @@ private:
   std::unique_ptr< std::vector<size_t> > _rowNumbers;
   std::unique_ptr< std::vector<size_t> > _categoricalFeatureCols;
   std::unique_ptr< std::vector<size_t> > _numericalFeatureCols;
+  // Linear Feature Columns are columns used to evaluate a split in ridgeRF
   std::unique_ptr< std::vector<size_t> > _linearFeatureCols;
   std::size_t _numRows;
   std::size_t _numColumns;

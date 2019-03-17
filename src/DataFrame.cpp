@@ -20,7 +20,6 @@ DataFrame::DataFrame(
   this->_featureData = std::move(featureData);
   this->_outcomeData = std::move(outcomeData);
   this->_categoricalFeatureCols = std::move(categoricalFeatureCols);
-  this->_linearFeatureCols = std::move(linearFeatureCols);
   this->_numRows = numRows;
   this->_numColumns = numColumns;
 
@@ -46,6 +45,35 @@ DataFrame::DataFrame(
   std::unique_ptr< std::vector<size_t> > numericalFeatureCols (
       new std::vector<size_t>(numericalFeatureColss));
   this->_numericalFeatureCols = std::move(numericalFeatureCols);
+
+  // Linear Feature Columns (columns used to evaluate a split in RidgeRF)
+  // Are all numerical features by default, if specified otherwise, are all
+  // numerical columns specified by the user in linearFeatureColumns
+
+  if (linearFeatureCols->size() == numColumns) {
+    // By default, evaluate splits on all numerical features
+
+    std::unique_ptr< std::vector<size_t> > linearFeatureColumns (
+        new std::vector<size_t>(numericalFeatureColss));
+    this->_linearFeatureCols = std::move(linearFeatureColumns);
+  } else {
+    // Otherwise use user specified linear features
+
+    std::vector<size_t> linearFeatureColss;
+    for (size_t i = 0; i < numColumns; i++) {
+      // Take all features in linearFeatureCols that are not categorical features
+      if ((std::find(catCols->begin(), catCols->end(), i) == catCols->end()) &&
+          (std::find(linearFeatureCols->begin(), linearFeatureCols->end(), i) != linearFeatureCols->end())) {
+        linearFeatureColss.push_back(i);
+      }
+    }
+
+    std::unique_ptr< std::vector<size_t> > linearFeatureColumns (
+        new std::vector<size_t>(linearFeatureColss));
+
+    this->_linearFeatureCols = std::move(linearFeatureColumns);
+  }
+
 }
 
 float DataFrame::getPoint(size_t rowIndex, size_t colIndex) {
@@ -79,6 +107,8 @@ std::vector<float>* DataFrame::getFeatureData(
 std::vector<float> DataFrame::getLinObsData(
   size_t rowIndex
 ) {
+  // Retrieves observation of given index, taking only the columns specified
+  // By the linFeats variable (which is by default all continuous features)
   if (rowIndex < getNumRows()) {
     std::vector<float> feat;
     for (size_t i = 0; i < getLinCols()->size(); i++) {
