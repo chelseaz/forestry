@@ -438,6 +438,8 @@ forestry <- function(x,
     } else {
       categoricalFeatureCols_cpp <- categoricalFeatureCols_cpp - 1
     }
+    # Take only numerical features from linFeats
+    linFeats <- linFeats[!(linFeats %in% categoricalFeatureCols_cpp)]
 
     # Create rcpp object
     # Create a forest object
@@ -477,6 +479,7 @@ forestry <- function(x,
         TRUE,
         rcppDataFrame
       )
+
       processed_dta <- list(
         "processed_x" = processed_x,
         "y" = y,
@@ -531,6 +534,7 @@ forestry <- function(x,
 
     categoricalFeatureMapping <-
       reuseforestry@categoricalFeatureMapping
+    linFeats <- linFeats[!(linFeats %in% categoricalFeatureCols_cpp)]
 
     # Create rcpp object
     # Create a forest object
@@ -667,6 +671,7 @@ multilayerForestry <- function(x,
     } else {
       categoricalFeatureCols_cpp <- categoricalFeatureCols_cpp - 1
     }
+    linFeats <- linFeats[!(linFeats %in% categoricalFeatureCols_cpp)]
 
     # Create rcpp object
     # Create a forest object
@@ -764,6 +769,7 @@ multilayerForestry <- function(x,
 
     categoricalFeatureMapping <-
       reuseforestry@categoricalFeatureMapping
+    linFeats <- linFeats[!(linFeats %in% categoricalFeatureCols_cpp)]
 
     # Create rcpp object
     # Create a forest object
