@@ -92,7 +92,7 @@ void RFNode::ridgePredict(
                      1);
   y.col(0) = arma::conv_to<arma::Col<double> >::from(outcomePoints);
 
-  //Compute XtX + lambda * I * Y = C
+  //Compute (XtX + lambda * I) * Xt * Y = C
   arma::Mat<double> coefficients = (x.t() * x +
                                   identity * lambda).i() * x.t() * y;
 
